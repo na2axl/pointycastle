@@ -34,6 +34,8 @@ import "modes/ecb_test.dart" as ecb_test;
 import "modes/gctr_test.dart" as gctr_test;
 import "modes/ofb_test.dart" as ofb_test;
 import "modes/sic_test.dart" as sic_test;
+import "modes/gcm_test.dart" as gcm_test;
+import "modes/cbc_hmac_test.dart" as cbc_hmac_test;
 import "paddings/padded_block_cipher_test.dart" as padded_block_cipher_test;
 import "paddings/pkcs7_test.dart" as pkcs7_test;
 import "paddings/iso7816d4_test.dart" as iso7816d4_test;
@@ -83,6 +85,8 @@ void main() {
   gctr_test.main();
   ofb_test.main();
   sic_test.main();
+  gcm_test.main();
+  cbc_hmac_test.main();
   padded_block_cipher_test.main();
   pkcs7_test.main();
   iso7816d4_test.main();

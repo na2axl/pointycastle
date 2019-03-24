@@ -16,10 +16,13 @@ import "dart:typed_data";
 import "src/registry/registry.dart";
 
 part "src/api/algorithm.dart";
-part "src/api/asymmetric_block_cipher.dart";
-part "src/api/asymmetric_key.dart";
-part "src/api/asymmetric_key_pair.dart";
-part "src/api/asymmetric_key_parameter.dart";
+part "src/api/registry_factory_exception.dart";
+part 'src/api/aead_block_cipher.dart';
+part 'src/api/aead_parameters.dart';
+part "src/api/assymetric_block_cipher.dart";
+part "src/api/assymetric_key.dart";
+part "src/api/assymetric_key_pair.dart";
+part "src/api/assymetric_key_parameter.dart";
 part "src/api/block_cipher.dart";
 part "src/api/cipher_parameters.dart";
 part "src/api/digest.dart";
