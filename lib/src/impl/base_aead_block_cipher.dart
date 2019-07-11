@@ -96,7 +96,7 @@ abstract class BaseAEADBlockCipher extends AEADBlockCipher {
       AEADParameters param = params;
 
       newNonce = param.nonce;
-      _initialAssociatedText = param.associatedData;
+      _initialAssociatedText = param.associatedData ?? Uint8List(0);
 
       int macSizeBits = param.macSize;
       if (macSizeBits < 32 || macSizeBits > 256 || macSizeBits % 8 != 0) {
@@ -109,7 +109,7 @@ abstract class BaseAEADBlockCipher extends AEADBlockCipher {
       ParametersWithIV param = params;
 
       newNonce = param.iv;
-      _initialAssociatedText  = null;
+      _initialAssociatedText = Uint8List(0);
       _macSize = 16;
       keyParam = param.parameters;
     } else {

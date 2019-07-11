@@ -11,6 +11,7 @@ import 'package:pointycastle/block/modes/ecb.dart';
 import 'package:pointycastle/block/modes/gctr.dart';
 import 'package:pointycastle/block/modes/ofb.dart';
 import 'package:pointycastle/block/modes/sic.dart';
+import 'package:pointycastle/block/modes/gcm.dart';
 import 'package:pointycastle/digests/blake2b.dart';
 import 'package:pointycastle/digests/md2.dart';
 import 'package:pointycastle/digests/md4.dart';
@@ -121,6 +122,7 @@ void _registerBlockCiphers(FactoryRegistry registry) {
   registry.register(GCTRBlockCipher.FACTORY_CONFIG);
   registry.register(OFBBlockCipher.FACTORY_CONFIG);
   registry.register(SICBlockCipher.FACTORY_CONFIG);
+  registry.register(GCMBlockCipher.FACTORY_CONFIG);
 }
 
 void _registerDigests(FactoryRegistry registry) {
