@@ -1,17 +1,18 @@
 **!!! Important Message !!!**
 
-The only maintainer of this library,
-[@stevenroose](https://github.com/stevenroose), is no longer able to actively
-maintain this library.  If anyone would be willing to take over maintainership,
-I would be glad to discuss that.  (Don't worry I won't give `pub` push access to
-anyone without having enough confidence in their good intentions.)  Until then,
-please only make issues for real bugs instead of feature requests.  PRs are
-still welcome, but I can't guarantee that I will have the time to review them.
+This project is being relicensed from a combination of the
+"GNU LESSER GENERAL PUBLIC LICENSE 3.0" and "Mozilla Public License 2.0"
+to the Bouncy Castle license. The new license can be read in the LICENSE file.
+
+Subsequent to this change, this library will be transitioned into the
+Bouncy Castle project. The Bouncy Castle team will take over the maintenance
+and development of this library.
+
 
 Pointy Castle
 =============
 
-A Dart library for encryption and decryption. As of today, most of the classes
+A Dart library for encryption and decryption. In this release, most of the classes
 are ports of Bouncy Castle from Java to Dart. The porting is almost always
 direct except for some classes that had been added to ease the use of low level
 data.
@@ -20,9 +21,9 @@ To make sure nothing fails, tests and benchmarks for every algorithm are
 provided. The expected results are taken from the Bouncy Castle Java version
 and also from standards, and matched against the results got from Pointy Castle.
 
-# Algorithms
+## Algorithms
 
-As of the last release, the following algorithms are implemented:
+In this release, the following algorithms are implemented:
 
 **Block ciphers:**
   * AES
@@ -86,65 +87,112 @@ As of the last release, the following algorithms are implemented:
   * Based on block cipher in CTR mode with auto reseed (for forward security)
   * Based on Fortuna algorithm
 
+### Instantiating implementation objects
 
-# Usage
+There are two ways to instantiate objects that implement the
+algorithms:
 
-There are two ways to use the algorithms that PointyCastle provides: with or
-without using the registry.
+- using the registry, or
+- without the registry.
 
-## Registry
+#### Using the registry
 
-The registry allows users to easily instantiate classes for the algorithms using
-the algorithm shorthands like given in the list above.  It also makes it possible
-to seamlessly chain different algorithms together.  For example:
+Using the registry, the algorithm name is provided to high-level class
+factories.
+
+This is especially convenient when an algorithm involves multiple
+algorithm implementation classes to implement. All the necessary
+classes can all be instantiated with a single name
+(e.g. "HMAC/SHA-256" or "SHA-1/HMAC/PBKDF2"), and they are
+automatically combined together with the correct values.
+
+To use the registry, either import `pointycastle.dart` or
+`export.dart`.  For example,
 
 ```dart
 import "package:pointycastle/pointycastle.dart";
 
-void main() {
-  Digest sha256 = new Digest("SHA-256");
-  // or
-  KeyDerivator derivator = new KeyDerivator("SHA-1/HMAC/PBKDF2");
-}
+final sha256 = Digest("SHA-256");
+final sha1 = Digest("SHA-1");
+final md5 = Digest("MD5");
+
+final hmacSha256 = Mac("SHA-256/HMAC");
+final hmacSha1 = Mac("SHA-1/HMAC");
+final hmacMd5 = Mac("MD5/HMAC");
+
+final derivator = KeyDerivator("SHA-1/HMAC/PBKDF2");
+
+final signer = Signer("SHA-256/RSA");
 ```
 
-## Without the registry
+#### Without the registry
 
-Using the registry means that all algorithms will be imported by default, which
-can possibly increase the compiled size of your program.  To avoid this, it is
-possible to import algorithms one by one.  In that case, you can decide to either
-use the classes directly, or still use the registry.  But remember that the
-registry only contains the classes that you import.  For example:
+Without the registry, each implementation class must be instantiated
+using its constructor.
 
-```dart
-import "package:pointycastle/api.dart";
+If an algorithm involves multiple algorithm implementation classes,
+they each have to be individually instantiated and combined together
+with the correct values.
 
-import "package:pointycastle/digests/sha256.dart";
+To use the constructors, import `export.dart`.  For example,
 
-import "package:pointycastle/digests/sha1.dart";
-import "package:pointycastle/macs/hmac.dart";
-import "package:pointycastle/key_derivators/pbkdf2.dart";
+``` dart
+import "package:pointycastle/export.dart";
 
-void main() {
-  Digest sha256 = new SHA256Digest();
-  // or
-  KeyDerivator derivator = new PBKDF2KeyDerivator(
-      new HMac(new SHA1Digest(), 64));
+final sha256 = SHA256Digest();
+final sha1 = SHA1Digest();
+final md5 = MD5Digest();
 
-  // But the registry keeps working for all imported algorithms:
+final hmacSha256 = HMac(SHA256Digest(), 64);
+final hmacSha512 = HMac(SHA512Digest(), 128);
+final hmacMd5 = HMac(MD5Digest(), 64);
 
-  Digest sha256 = new Digest("SHA-256");
-  // or
-  KeyDerivator derivator = new KeyDerivator("SHA-1/HMAC/PBKDF2");
-}
+final derivator = PBKDF2KeyDerivator(HMac(SHA256Digest(), 64));
+
+final signer = RSASigner(SHA256Digest(), '0609608648016503040201');
 ```
 
+#### Registry vs without registry
 
-## Libraries
+Using the registry means that all algorithms will be imported by
+default, which can increase the compiled size of your program.
 
- * `package:pointycastle/pointycastle.dart`: exports the high-level API and the
-    registry loaded with all available implementations
- * `package:pointycastle/api.dart`: exports the high-level API and the registry
-    without any implementations
- * `package:pointycastle/export.dart`: exports the API and all implementation
-    classes
+To avoid this, instantiate **all** classes directly by using their
+constructors.
+
+### Importing libraries
+
+There are two main approaches for importing Point Castle libraries:
+
+- only import _pointycastle.dart_ (which includes the high-level API and
+  the interfaces); or
+- only import _export.dart_ (which includes the high-level API, interfaces
+  and all the implementation classes).
+  
+It is also possible to import _api.dart_ (the high-level API) and
+selectively import individual implementation classes as they are
+needed. But this method requires a lot more programmer effort, and no
+longer has any advantage over simply importing _export.dart_ and
+relying Dart's tree shaking to leave out code that is not needed.
+
+The registry can be used with any of these approaches. The different
+approaches only affects access to the implementation classes.
+
+Therefore, when avoiding the code size overheads of the registry, be
+careful not to accidentally use the registry. Since the single use of
+a factory from the registry will cause the entire registry to be
+loaded.
+
+## Tutorials
+
+Some articles on how to use some of Pointy Castle's features can be
+found under the _tutorials_ directory in the sources.
+
+- [Calculating a digest](https://github.com/PointyCastle/pointycastle/blob/master/tutorials/digest.md) - calculating a hash or digest (e.g. SHA-256, SHA-1, MD5)
+- [Calculating a HMAC](https://github.com/PointyCastle/pointycastle/blob/master/tutorials/hmac.md) - calculating a hash-based message authentication code (e.g. HMAC-SHA256, HMAC-SHA1)
+- [Using AES-CBC](https://github.com/PointyCastle/pointycastle/blob/master/tutorials/aes-cbc.md) - block encryption and decryption with AES-CBC
+- [Using RSA](https://github.com/PointyCastle/pointycastle/blob/master/tutorials/rsa.md) - key generation, signing/verifying, and encryption/decryption
+- Some [tips](https://github.com/PointyCastle/pointycastle/blob/master/tutorials/tips.md) on using Pointy Castle
+
+_Note: the above links are to the most recent versions on the master
+branch on GitHub. They may be different from the version here._
